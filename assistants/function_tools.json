@@ -1,6 +1,6 @@
 [
   {
-    "name": "get_plantilla_personal",
+    "name": "get_plantilla_empleados_compania",
     "description": "Get the current staff of the company, contains payroll information of each employee of the company, from details of the job position to different concepts of payment of the employees",
     "strict": true,
     "parameters": {
@@ -16,8 +16,8 @@
     }
   },
   {
-    "name": "get_info_empleado",
-    "description": "Get the current information of the employee, such as payroll information, details of the job position and different concepts of payment of the employee",
+    "name": "get_informacion_empleado",
+    "description": "Get the all the current information of the employee, such as payroll information, details of the job position and different concepts of payment of the employee",
     "strict": true,
     "parameters": {
       "type": "object",
@@ -32,7 +32,10 @@
         }
       },
       "additionalProperties": false,
-      "required": ["company", "employee_id"]
+      "required": [
+        "company",
+        "employee_id"
+      ]
     }
   }
 ]

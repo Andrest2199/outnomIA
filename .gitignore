@@ -177,3 +177,4 @@ assistants/onomi/migrations/__pycache__/
 
 /static/
 .idea/
+test.py
