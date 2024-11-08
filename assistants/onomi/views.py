@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 import json
+from assistants.onomi.assistant import onomi_assistant
 
 # Create your views here.
 @csrf_exempt
@@ -15,15 +16,19 @@ def onomi(request):
         question = req.get("question")
         compania = req.get("compania")
         database = req.get("database")
-        if question is None or question is '' or compania is None or compania is '' or database is None or database is '':
+        thread_id = req.get("thread_id")
+        # Asegura que haya una pregunta
+        if not question:
+            return JsonResponse({"error": "No se proporcionó ninguna pregunta."}, status=400, safe=False)
+        # Validamos campos requeridos
+        if compania is None or compania is '' or database is None or database is '':
             return JsonResponse(
                 f'Missing parameters compania or database, please verify.',
                 status=400,
                 safe=False,
             )
-        data = {'compania':compania,'database':database}
-        data2 = json.dumps(data)
-        return JsonResponse(data2, status=200, safe=False)
+        data = onomi_assistant(question,compania,database,thread_id)
+        return JsonResponse(data, status=200, safe=False)
     except ValueError as e:
         return JsonResponse({"Error": str(e)}, status=422)
     except Exception as e:
