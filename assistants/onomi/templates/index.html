@@ -1,160 +1,61 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ONOMI ASSISTANT</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 0;
-            background-color: #f5f5f5;
-        }
-
-        .chat-container {
-            width: 90%;
-            max-width: 60%;
-            margin-top: 20px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .chat-display {
-            padding: 20px;
-            flex-grow: 1;
-            overflow-y: auto;
-            max-height: 70vh;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .message {
-            margin-bottom: 15px;
-            padding: 10px;
-            border-radius: 8px;
-            width: fit-content;
-            max-width: 80%;
-        }
-
-        .user-message {
-            align-self: flex-end;
-            background-color: #d1e7dd;
-            color: #0f5132;
-        }
-
-        .assistant-message {
-            align-self: flex-start;
-            background-color: #f8d7da;
-            color: #842029;
-        }
-
-        .chat-input-container {
-            display: flex;
-            padding: 10px;
-            background-color: #f0f0f0;
-            border-top: 1px solid #ddd;
-        }
-
-        .chat-input {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        .send-button {
-            margin-left: 10px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #ffffff;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .send-button:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-
-<div class="chat-container">
-    <div class="chat-display" id="chatDisplay">
+    <link rel="shortcut icon" href="#">
+    <link
+      rel="stylesheet"
+      href="https://use.fontawesome.com/releases/v5.12.1/css/all.css"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{% static 'css/styles.css' %}"
+    />
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.9/jquery.inputmask.min.js"></script>
+  </head>
+  <body>
+    <header class="main-header">
+      <label for="btn-nav" class="btn-nav"><i class="fas fa-bars"></i></label>
+      <input type="checkbox" id="btn-nav" />
+      <nav>
+        <ul class="navigation">
+          <li><a href="#">Home</a></li>
+          <li><a href="#">Servicios</a></li>
+          <li><a href="#">Nosotros</a></li>
+          <li><a href="#">Contacto</a></li>
+        </ul>
+      </nav>
+      <div style="display: flex; align-items: center; height: inherit">
+        <h2 style="padding-left: 5%">ONOMI ASSISTANT</h2>
+      </div>
+    </header>
+    <div class="chat-container">
+      <div class="chat-display" id="chatDisplay">
         <!-- Messages will appear here -->
+      </div>
+
+      <div class="chat-input-container">
+        <input
+          type="text"
+          id="userInput"
+          class="chat-input"
+          placeholder="Escribe tu pregunta..."
+          onkeypress="press(event)"
+          autofocus
+        />
+        <button id="btnEnviar" class="send-button" onclick="sendMessage()">
+          Enviar
+        </button>
+      </div>
     </div>
-
-    <div class="chat-input-container">
-        <input type="text" id="userInput" class="chat-input" placeholder="Escribe tu pregunta..." autofocus>
-        <button class="send-button" onclick="sendMessage()">Enviar</button>
-    </div>
-</div>
-
-<script>
-    // Simulate sending a message and receiving a response from the assistant
-    function sendMessage() {
-        const userInput = document.getElementById("userInput");
-        const chatDisplay = document.getElementById("chatDisplay");
-        const userMessage = userInput.value.trim();
-
-        if (userMessage === "") return;
-
-        // Display the user's message
-        const userMessageElement = document.createElement("div");
-        userMessageElement.classList.add("message", "user-message");
-        userMessageElement.textContent = userMessage;
-        chatDisplay.appendChild(userMessageElement);
-        userInput.value = ""; // Clear input
-
-        // Simulate sending the question to the assistant and getting a response
-        fetchAssistantResponse(userMessage);
-    }
-
-    // Function to simulate fetching a response from the assistant
-    async function fetchAssistantResponse(question) {
-        const chatDisplay = document.getElementById("chatDisplay");
-        const response = await fetch("http://127.0.0.1:8000/onomi", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ question: question,id_employee:'1001', compania:'1', database:'123',thread_id:'' })
-        });
-        
-        const data = await response.json();
-        let assistantResponse = "";
-        if (typeof(data.response) === 'object'){
-            assistantResponse = data.response['assistant']
-        }else{
-            assistantResponse = data.response || data.Error;
-        }
-        
-
-        // Display the assistant's response
-        const assistantMessageElement = document.createElement("div");
-        assistantMessageElement.classList.add("message", "assistant-message");
-        assistantMessageElement.innerHTML = assistantResponse;
-        chatDisplay.appendChild(assistantMessageElement);
-        const asss = document.createElement("div");
-        asss.classList.add("message", "assistant-message");
-        asss.innerHTML = 'Esto es una prueba con salto de linea\t\nAqui continua........';
-        chatDisplay.appendChild(asss);
-
-        // Scroll to the bottom of the chat display
-        chatDisplay.scrollTop = chatDisplay.scrollHeight;
-    }
-</script>
-
-</body>
+    <script type="text/javascript">var apiKey = "{{ api_key }}";</script>
+    <script src="{% static 'js/script.js' %}"></script>
+  </body>
 </html>

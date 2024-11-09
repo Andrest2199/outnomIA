@@ -7,7 +7,9 @@ from assistants.onomi.assistant import onomi_assistant
 
 # Create your views here.
 def index(request):
-    return render(request,"index.html")
+    # For Dev pourpose the API Key is on our enviorment but this API Key need to be send in the header in Prod so you can have access to the API Gateway of ONOMI
+    context = {"api_key": settings.API_KEY}
+    return render(request,"index.html",context)
 
 @csrf_exempt
 def onomi(request):
