@@ -2,13 +2,22 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
+from assistants.onomi.assistant import onomi_assistant,retrieve_messages_thread
 import json
-from assistants.onomi.assistant import onomi_assistant
+import requests
 
 # Create your views here.
 def index(request):
     # For Dev pourpose the API Key is on our enviorment but this API Key need to be send in the header in Prod so you can have access to the API Gateway of ONOMI
-    context = {"api_key": settings.API_KEY}
+    # thread=retrieve_messages_thread("thread_zaoTv5iw1BnM18ml5bW8rBbq")
+    threads = ["thread_zaoTv5iw1BnM18ml5bW8rBbq",
+              "thread_VCzZV3wFX2T8OilEp9xiZkyt",
+              "thread_4qnz1aJ6MeMExxwUFr2JTsnS",
+              "thread_qIV8i52aUoIivBmN8cWF4WFl",
+              "thread_p3fwAkACEy1uTUyNq6vNltbV",
+              "thread_OfwxHKROBAn04VrznrmZhBwa",
+              "thread_xXbgptqOdbqtq7Lum3sobadi"]
+    context = {"api_key": settings.API_KEY,"threads": threads}
     return render(request,"index.html",context)
 
 @csrf_exempt
@@ -54,6 +63,30 @@ def onomi(request):
         data = onomi_assistant(id_employee,compania,question,database,thread_id)
         # data= 'hola'
         return JsonResponse(data, status=200, safe=False)
+    except ValueError as e:
+        return JsonResponse({"Error": str(e)}, status=422)
+    except Exception as e:
+        return JsonResponse(str(e), status=500, safe=False)
+
+@csrf_exempt
+def retrieve_messages(request):
+    if request.method != "GET":
+        return JsonResponse("Method not allowed", status=405, safe=False)
+
+    try:
+        thread_id = request.GET.get("thread_id")
+        # Validamos que haya un id empleado
+        if not thread_id:
+            return JsonResponse({"Error": "No Se Proporcionó Ningun ID de Hilo de Conversación."}, status=400, safe=False)
+        # Validamos el tipo de thread_id
+        if not isinstance(thread_id, str):
+            return JsonResponse({"Error": "EL ID de Thread debe ser enviado como cadena de texto."}, status=400, safe=False)
+        
+        data = retrieve_messages_thread(thread_id)
+        if "error" in data.keys():
+            return JsonResponse({"Error": data.get('error')}, status=404)
+        
+        return JsonResponse({"message": "Success", "response": data}, status=200, safe=False)
     except ValueError as e:
         return JsonResponse({"Error": str(e)}, status=422)
     except Exception as e:

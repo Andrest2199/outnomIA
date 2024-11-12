@@ -16,6 +16,8 @@ import os
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_ORG_ID = os.getenv("OPENAI_ORG_ID")
 OPENAI_ASSISTANT = os.getenv("OPENAI_ASSISTANT")
+# API_KEY = os.getenv("OPENAI_ASSISTANT")
+API_KEY = "test"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,7 +32,10 @@ SECRET_KEY = 'django-insecure-)0hf*%w^1ye!1l&+^^hcz6o)k(q9yks7t%(8-d-kc-!e!%e#c@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["127.0.0.1"]
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 
 # Application definition
@@ -75,6 +80,16 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'src.wsgi.application'
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://0.0.0.0:3000",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://127.0.0.1:8000"
+]
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases

@@ -23,4 +23,5 @@ urlpatterns = [
     #ONOMI Urls
     path('', onomi_views.index, name='index'),
     path('onomi', onomi_views.onomi, name='onomi'),
+    path('retrieve_messages', onomi_views.retrieve_messages, name='retrieve_messages'),
 ]

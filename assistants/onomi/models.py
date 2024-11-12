@@ -9,6 +9,7 @@ class QuestionToAnswer(models.Model):
     compania = models.CharField(max_length=10)
     database = models.CharField(max_length=50)
     response = models.JSONField()
+    thread_id = models.CharField(max_length=100)
     tokens = models.FloatField()
 
     def to_json(self):
@@ -18,6 +19,7 @@ class QuestionToAnswer(models.Model):
             "compania": self.compania,
             "database": self.database,
             "response": self.response,
+            "thread_id": self.thread_id,
             "tokens_use": self.tokens
         }
 
