@@ -2,21 +2,23 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
-from assistants.onomi.assistant import onomi_assistant,retrieve_messages_thread
+from assistants.onomi.assistant import onomi_assistant
+from assistants.onomi.utils.messages import retrieve_messages_thread
 import json
 import requests
 
 # Create your views here.
 def index(request):
     # For Dev pourpose the API Key is on our enviorment but this API Key need to be send in the header in Prod so you can have access to the API Gateway of ONOMI
-    # thread=retrieve_messages_thread("thread_zaoTv5iw1BnM18ml5bW8rBbq")
     threads = ["thread_zaoTv5iw1BnM18ml5bW8rBbq",
               "thread_VCzZV3wFX2T8OilEp9xiZkyt",
               "thread_4qnz1aJ6MeMExxwUFr2JTsnS",
               "thread_qIV8i52aUoIivBmN8cWF4WFl",
               "thread_p3fwAkACEy1uTUyNq6vNltbV",
               "thread_OfwxHKROBAn04VrznrmZhBwa",
-              "thread_xXbgptqOdbqtq7Lum3sobadi"]
+              "thread_xXbgptqOdbqtq7Lum3sobadi",
+              "thread_dDtBL2TjsXlmqBFPGIOEOZRr",
+              "thread_ZtSrmPjhDLXzz7W8ljvoF5gj"]
     context = {"api_key": settings.API_KEY,"threads": threads}
     return render(request,"index.html",context)
 

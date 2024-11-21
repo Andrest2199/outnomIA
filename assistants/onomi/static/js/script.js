@@ -11,15 +11,10 @@ function sendMessage() {
   const userInput = document.getElementById("userInput");
   const chatDisplay = document.getElementById("chatDisplay");
   const userMessage = userInput.value.trim();
-  let thread_id = "";
+  const thread_id = document.getElementById("threadId").value;
 
   if (userMessage === "") return;
-  const threadElement = chatDisplay.lastElementChild;
-  if (threadElement != null && threadElement.id != 'spinner'){
-    thread_id = threadElement.id;
-  }else{
-    thread_id = "";
-  }
+
   // Display the user's message
   const userMessageElement = document.createElement("div");
   userMessageElement.classList.add("message", "user-message");
@@ -47,8 +42,8 @@ async function fetchAssistantResponse(question,thread_id="") {
     },
     body: JSON.stringify({
       question: question,
-      id_employee: "FROM FRONT",
-      compania: "FROM FRONT 1",
+      id_employee: "095393",
+      compania: "1",
       database: "FROM FRONT 123",
       thread_id: thread_id,
     }),
@@ -59,8 +54,12 @@ async function fetchAssistantResponse(question,thread_id="") {
   let assistantResponse = "";
   if (typeof data.response === "object") {
     assistantResponse = data.response["assistant"];
+    const threadElement = document.getElementById("threadId");
+    threadElement.value = data.response["thread_id"];
   } else {
     assistantResponse = data.response || data.Error;
+    const threadElement = document.getElementById("threadId");
+    threadElement.value = data.response["thread_id"] || "";
   }
   // Display the assistant's response
   const assistantMessageElement = document.createElement("div");
@@ -121,10 +120,8 @@ function displayMessages(messages,thread_id) {
   const spinnerElement = createSpinner();
   chatDisplay.appendChild(spinnerElement);
   // Add thread id to the chat
-  const threadIdElement = document.createElement("div")
-  threadIdElement.id = thread_id
-  threadIdElement.hidden = true;
-  chatDisplay.appendChild(threadIdElement);
+  const threadElement = document.getElementById("threadId");
+  threadElement.value = thread_id;
   // Hacer scroll hacia abajo para ver el mensaje
   chatDisplay.scrollTop = chatDisplay.scrollHeight;
   // Ocultar spinnerBody
@@ -158,6 +155,8 @@ function newThread(){
   $('#newThread').parent().css("background","rgba(255,0,0,0.5)");
   const chatDisplay = document.getElementById("chatDisplay");
   chatDisplay.innerHTML = '';
+  const threadElement = document.getElementById("threadId");
+  threadElement.value = "";
 }
 
 $('#btn-nav').on("change", function (){

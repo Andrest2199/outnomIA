@@ -17,7 +17,7 @@
   },
   {
     "name": "get_informacion_empleado",
-    "description": "Get the all the current information of the employee, such as payroll information, details of the job position and different concepts of payment of the employee",
+    "description": "Get all the current information of the employee, such as payroll information, details of the job position and different concepts of payment of the employee",
     "strict": true,
     "parameters": {
       "type": "object",
