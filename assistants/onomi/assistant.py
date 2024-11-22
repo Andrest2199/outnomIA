@@ -9,10 +9,7 @@ from assistants.onomi.models import QuestionToAnswer
 from assistants.onomi.utils.functions import handle_required_action
 from assistants.onomi.utils.messages import retrieve_annotation
 
-logging.basicConfig(level=logging.INFO)
-
-#TODO:logging.info(f"THREAD INFO: {thread}")
-#TODO:logging.error(f"Error retrieving file {file_id}: {e}")
+#TODO:cambiar los errores de salida en la respuesta por una respuesta "Disculpe la molestia, por el momento la respuesta no esta disponible, favor de acercarse a su departamento de recursos humanos o intentar de nuevo mas tarde."
 
 # Añadimos 'assistant' al root path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
@@ -22,9 +19,12 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "src.settings")
 api_key = settings.OPENAI_API_KEY
 org_id = settings.OPENAI_ORG_ID
 assistant_id = settings.OPENAI_ASSISTANT
+log_file = settings.LOG_FILE
 
 #Main function
 def onomi_assistant(id_employee,company,question,database,thread_id):
+    # Set log
+    logging.basicConfig(filename=log_file,format="%(levelname)s|%(asctime)s|%(message)s",level=logging.INFO)
     # Declare variables
     response = {}
     tokens_use = 0
@@ -37,7 +37,7 @@ def onomi_assistant(id_employee,company,question,database,thread_id):
     else:
         # Retrieve a thread
         thread = client.beta.threads.update(thread_id,metadata={"modified": "true","user": id_employee,"company": company})
-    print(f"THREAD INFO:{thread}")
+    logging.info(f"%s|%s| THREAD INFO: {thread}",id_employee,company)
     # Create a message and add it to the thread
     message = client.beta.threads.messages.create(
         thread_id=thread.id,
@@ -45,43 +45,50 @@ def onomi_assistant(id_employee,company,question,database,thread_id):
         role="user",
         metadata={"user": id_employee,"company": company}
     )
-    print(f"MESSAGE ID:{message}")
+    logging.info(f"%s|%s| MESSAGE INFO: {message}",id_employee,company)
     # Run the thread
     run = client.beta.threads.runs.create(
         thread_id=thread.id,
         assistant_id=assistant_id,
         metadata={"user": id_employee,"company": company}
     )
-    print(f"RUN ID:{run.id}")
+    logging.info(f"%s|%s| RUN ID: {run.id}",id_employee,company)
+    # Define max iterations for run control
+    MAX_ITERATIONS = 75
+    iteration_count = 0
     # Retrieve and Check status until completed
     while run.status not in ["completed", "failed", "cancelled", "incomplete", "expired"]:
+        iteration_count += 1
+        if iteration_count > MAX_ITERATIONS:
+            logging.error(f"%s|%s| Maximum iterations reached in RUN cycle. Exiting.", id_employee, company)
+            response.update({"Error": "Maximum iterations reached in RUN cycle. Possible infinite loop."})
+            return format_response(question, id_employee, company, database, response, thread.id, 0)
         # Verifiy running status 
         if run.status in ["queued", "in_progress", "cancelling"]:
             time.sleep(1)
             run = client.beta.threads.runs.retrieve(thread_id=thread.id,run_id=run.id)
-            print(f"RUN STATUS:{run.status}")
+            logging.info(f"%s|%s| RUN STATUS: {run.status}",id_employee,company)
         # Handle the requires action
         elif run.status == "requires_action":
-            print(f"RUN STATUS ENTER REQUIRED ACTION:{run.status}")
+            logging.info(f"%s|%s| ENTER REQUIRED ACTION: {run.status}",id_employee,company)
             run = handle_required_action(client, run, thread.id, company, id_employee)
-    
         # Set error if run failed or option above and break cycle
         elif run.status in ["failed", "cancelled", "incomplete", "expired"]:
-            print(f"Run failed with status: {run.status} and {run}")
+            logging.info(f"%s|%s| RUN FAILED WITH STATUS: {run.status}",id_employee,company)
+            logging.info(f"%s|%s| RUN DETAIL: {run}",id_employee,company)
             response.update({"Error": f"Run failed with status: {run.status}"})
             tokens_use = run.usage.total_tokens or 0
             return format_response(question, id_employee, company, database, response, thread.id, tokens_use)
 
     # Retrieve message when status is completed
     if run.status == "completed":
-        print(f"RUN STATUS:{run.status}")
-        index = 0
+        logging.info(f"%s|%s| RUN STATUS: {run.status}",id_employee,company)
         messages = client.beta.threads.messages.list(thread_id=thread.id)
-        print(f"MESSAGES:{messages}")
+        logging.info(f"%s|%s| MESSAGES: {messages}",id_employee,company)
         last_message = messages.data[0]
         response[last_message.role] = retrieve_annotation(client, thread.id, last_message.id)
         tokens_use = run.usage.total_tokens or 0
-        print(f"RUN USAGE:{tokens_use}")
+        logging.info(f"%s|%s| RUN USAGE: {tokens_use}",id_employee,company)
 
     # Return JSON response
     return format_response(question, id_employee, company, database, response, thread.id, tokens_use)

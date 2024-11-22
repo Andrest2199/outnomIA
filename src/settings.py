@@ -12,27 +12,35 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
+import environ
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-OPENAI_ORG_ID = os.getenv("OPENAI_ORG_ID")
-OPENAI_ASSISTANT = os.getenv("OPENAI_ASSISTANT")
-# API_KEY = os.getenv("OPENAI_ASSISTANT")
-API_KEY = "test"
+env = environ.Env(DEBUG=(bool, False))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+environ.Env.read_env(str(BASE_DIR / ".env"))
+
+# ENV VARIABLES
+OPENAI_API_KEY = env("OPENAI_API_KEY")
+OPENAI_ORG_ID = env("OPENAI_ORG_ID")
+OPENAI_ASSISTANT = env("OPENAI_ASSISTANT")
+API_KEY = env("API_KEY")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-)0hf*%w^1ye!1l&+^^hcz6o)k(q9yks7t%(8-d-kc-!e!%e#c@'
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ["127.0.0.1"]
+DEBUG = env("DEBUG")
+if DEBUG:
+    ALLOWED_HOSTS = ["127.0.0.1"]
+    LOG_FILE= "onomi_logs_dev.log"
+else:
+    ALLOWED_HOSTS = ["127.0.0.1","go3.grupoono.lat","api.grupoono.lat","go3.localhost","201.163.197.69"]
+    LOG_FILE= env("LOG_FILE")
 SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True

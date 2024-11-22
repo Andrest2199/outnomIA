@@ -1,4 +1,5 @@
 import requests
+import logging
 
 def auth_login():
     url="https://api.grupoono.lat/auth"
@@ -11,7 +12,8 @@ def auth_login():
     if 'status' in auth.keys() and auth['status'] == 'success':
         return {'success':auth['data']}
     else:
-        print(f"ERROR RESPONSE API: {auth['error']}")  
+        # print(f"ERROR RESPONSE API: {auth['error']}")
+        logging.error(f"ERROR RESPONSE API: {auth['error']}")
         return {'error':auth['error']}
 
 def call_api_with_auth(url, payload):

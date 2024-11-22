@@ -55,11 +55,13 @@ async function fetchAssistantResponse(question,thread_id="") {
   if (typeof data.response === "object") {
     assistantResponse = data.response["assistant"];
     const threadElement = document.getElementById("threadId");
-    threadElement.value = data.response["thread_id"];
+    if (threadElement.value == "" || threadElement.value == null )
+      threadElement.value = data.response["thread_id"];
   } else {
     assistantResponse = data.response || data.Error;
     const threadElement = document.getElementById("threadId");
-    threadElement.value = data.response["thread_id"] || "";
+    if (threadElement.value == "" || threadElement.value == null )
+      threadElement.value = data.response["thread_id"] || "";
   }
   // Display the assistant's response
   const assistantMessageElement = document.createElement("div");

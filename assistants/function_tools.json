@@ -37,5 +37,26 @@
         "employee_id"
       ]
     }
+  },
+  {
+    "VERSION":2,
+    "name": "get_current_employee_information",
+    "description": "Get all the current information of the employee that is log, such as payroll information, details of the job position and different concepts of payment of the employee",
+    "strict": false,
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
+  },
+  {
+    "name": "get_all_employees_information",
+    "description": "Get all the current staff of the company, contains payroll information of each employee of the company, from details of the job position to different concepts of payment of the employees",
+    "strict": false,
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": []
+    }
   }
 ]
