@@ -34,7 +34,7 @@ function sendMessage() {
 // Function to simulate fetching a response from the assistant
 async function fetchAssistantResponse(question,thread_id="") {
   const chatDisplay = document.getElementById("chatDisplay");
-  const response = await fetch("http://127.0.0.1:8000/onomi", {
+  const response = await fetch("http://3.82.204.90:80/onomi", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -83,7 +83,7 @@ async function loadMessages(thread_id) {
   });
   $(`#${thread_id}`).parent().css("background","rgba(255,0,0,0.5)");
   try {
-      const response = await fetch(`http://127.0.0.1:8000/retrieve_messages?thread_id=${thread_id}`, {
+      const response = await fetch(`http://3.82.204.90:80/retrieve_messages?thread_id=${thread_id}`, {
           method: "GET",
           headers: {
               "Content-Type": "application/json"
