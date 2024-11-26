@@ -168,13 +168,17 @@ utils/__pycache__/
 assistants/onomi/__pycache__/
 assistants/onomi/utils/__pycache__
 assistants/onomi/migrations/__pycache__/
+assistants/function_tools.json
 
 /src/__pycache__/
 /src/local_settings.py
 /src/.env
-
+/src/wsgi.py
 .env
 
 /static/
 .idea/
+
 test.py
+requirements.txt
+manage.py
