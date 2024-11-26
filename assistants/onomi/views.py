@@ -8,6 +8,7 @@ import json
 import requests
 
 # Create your views here.
+@csrf_exempt
 def index(request):
     # For Dev pourpose the API Key is on our enviorment but this API Key need to be send in the header in Prod so you can have access to the API Gateway of ONOMI
     threads = ["thread_bc5UEaRDWOXNdd25zVTMp2fu",
@@ -18,6 +19,7 @@ def index(request):
               "thread_ZtSrmPjhDLXzz7W8ljvoF5gj"]
     context = {"api_key": settings.API_KEY,"threads": threads}
     return render(request,"index.html",context)
+
 
 @csrf_exempt
 def onomi(request):

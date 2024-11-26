@@ -36,10 +36,10 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 if DEBUG:
-    ALLOWED_HOSTS = ["127.0.0.1"]
+    ALLOWED_HOSTS = ["3.82.204.90","127.0.0.1"]
     LOG_FILE= "onomi_logs_dev.log"
 else:
-    ALLOWED_HOSTS = ["127.0.0.1","go3.grupoono.lat","api.grupoono.lat","go3.localhost","201.163.197.69"]
+    ALLOWED_HOSTS = ["3.82.204.90","127.0.0.1","go3.grupoono.lat","api.grupoono.lat","go3.localhost","201.163.197.69"]
     LOG_FILE= env("LOG_FILE")
 SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = True
@@ -55,10 +55,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'assistants.onomi'
+    'assistants.onomi',
+    'corsheaders'
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -93,12 +95,13 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8000",
     "http://127.0.0.1:3000",
     "http://0.0.0.0:3000",
+    "http://3.82.204.90"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:8000"
+    "http://127.0.0.1:8000",
+    "http://3.82.204.90"
 ]
 
 # Database
@@ -146,8 +149,11 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, "static")
+STATIC_URL = '/static/'
+STATIC_ROOT = '/var/www/proyecto/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "assistants/onomi/static"),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
