@@ -10,13 +10,10 @@ import requests
 # Create your views here.
 def index(request):
     # For Dev pourpose the API Key is on our enviorment but this API Key need to be send in the header in Prod so you can have access to the API Gateway of ONOMI
-    threads = ["thread_zaoTv5iw1BnM18ml5bW8rBbq",
-              "thread_VCzZV3wFX2T8OilEp9xiZkyt",
-              "thread_4qnz1aJ6MeMExxwUFr2JTsnS",
+    threads = ["thread_bc5UEaRDWOXNdd25zVTMp2fu",
+              "thread_Go0VIMu5HP3hAJWYcT7zJNxy",
               "thread_qIV8i52aUoIivBmN8cWF4WFl",
-              "thread_p3fwAkACEy1uTUyNq6vNltbV",
               "thread_OfwxHKROBAn04VrznrmZhBwa",
-              "thread_xXbgptqOdbqtq7Lum3sobadi",
               "thread_dDtBL2TjsXlmqBFPGIOEOZRr",
               "thread_ZtSrmPjhDLXzz7W8ljvoF5gj"]
     context = {"api_key": settings.API_KEY,"threads": threads}

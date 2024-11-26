@@ -42,9 +42,9 @@ async function fetchAssistantResponse(question,thread_id="") {
     },
     body: JSON.stringify({
       question: question,
-      id_employee: "095393",
+      id_employee: "2004",
       compania: "1",
-      database: "FROM FRONT 123",
+      database: "FROM FRONT 1",
       thread_id: thread_id,
       is_admin: false
     }),
