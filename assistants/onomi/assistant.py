@@ -22,7 +22,8 @@ assistant_id = settings.OPENAI_ASSISTANT
 log_file = settings.LOG_FILE
 
 #Main function
-def onomi_assistant(id_employee,company,question,database,thread_id):
+def onomi_assistant(id_employee,company,question,database,thread_id,is_admin):
+    # return format_response('hola','111','1','2','test','thread_ZtSrmPjhDLXzz7W8ljvoF5gj','0')
     # Set log
     logging.basicConfig(filename=log_file,format="%(levelname)s|%(asctime)s|%(message)s",level=logging.INFO)
     # Declare variables
@@ -70,17 +71,19 @@ def onomi_assistant(id_employee,company,question,database,thread_id):
             logging.info(f"%s|%s| RUN STATUS: {run.status}",id_employee,company)
         # Handle the requires action
         elif run.status == "requires_action":
-            logging.info(f"%s|%s| ENTER REQUIRED ACTION: {run.status}",id_employee,company)
-            run = handle_required_action(client, run, thread.id, company, id_employee)
-        # Set error if run failed or option above and break cycle
-        elif run.status in ["failed", "cancelled", "incomplete", "expired"]:
-            logging.info(f"%s|%s| RUN FAILED WITH STATUS: {run.status}",id_employee,company)
-            logging.info(f"%s|%s| RUN DETAIL: {run}",id_employee,company)
-            response.update({"Error": f"Run failed with status: {run.status}"})
-            tokens_use = run.usage.total_tokens or 0
-            return format_response(question, id_employee, company, database, response, thread.id, tokens_use)
+            logging.info(f"%s|%s| ENTER REQUIRED ACTION: {run.status}", id_employee, company)
+            action_result = handle_required_action(client, run, thread.id, company, id_employee, is_admin)
+            
+            if isinstance(action_result, dict) and action_result.get("status") == "error":
+                logging.error(f"%s|%s| ACTION FAILED: {action_result.get('message')}", id_employee, company)
+                response.update({"assistant": action_result.get("message")})
+                logging.error(f"%s|%s| TOKENS: {run}", id_employee, company)
+                tokens_use = 0
+                return format_response(question, id_employee, company, database, response, thread.id, tokens_use)
+            else:
+                run = action_result
 
-    # Retrieve message when status is completed
+    # Retrieve message when status is completed or failed
     if run.status == "completed":
         logging.info(f"%s|%s| RUN STATUS: {run.status}",id_employee,company)
         messages = client.beta.threads.messages.list(thread_id=thread.id)
@@ -88,8 +91,17 @@ def onomi_assistant(id_employee,company,question,database,thread_id):
         last_message = messages.data[0]
         response[last_message.role] = retrieve_annotation(client, thread.id, last_message.id)
         tokens_use = run.usage.total_tokens or 0
-        logging.info(f"%s|%s| RUN USAGE: {tokens_use}",id_employee,company)
-
+    elif run.status in ["failed", "cancelled", "incomplete", "expired"]:
+        logging.info(f"%s|%s| RUN FAILED WITH STATUS: {run.status}", id_employee, company)
+        logging.info(f"%s|%s| RUN DETAIL: {run}", id_employee, company)
+        response.update({"assistant": "Sorry for the inconvenience. At the moment, the answer is not available. If you need immediate assistance, please contact your Human Resources department directly."})
+        tokens_use = run.usage.total_tokens or 0
+    else:
+        logging.error(f"%s|%s| UNHANDLED RUN STATUS: {run.status}", id_employee, company)
+        response.update({"assistant": "Sorry for the inconvenience. At the moment, the answer is not available. If you need immediate assistance, please contact your Human Resources department directly."})
+        tokens_use = run.usage.total_tokens or 0
+    
+    logging.info(f"%s|%s| RUN USAGE: {tokens_use}",id_employee,company)
     # Return JSON response
     return format_response(question, id_employee, company, database, response, thread.id, tokens_use)
 

@@ -46,22 +46,22 @@ async function fetchAssistantResponse(question,thread_id="") {
       compania: "1",
       database: "FROM FRONT 123",
       thread_id: thread_id,
+      is_admin: false
     }),
   });
 
   const data = await response.json();
-  console.log(data);
   let assistantResponse = "";
   if (typeof data.response === "object") {
     assistantResponse = data.response["assistant"];
     const threadElement = document.getElementById("threadId");
     if (threadElement.value == "" || threadElement.value == null )
-      threadElement.value = data.response["thread_id"];
+      threadElement.value = data.thread_id;
   } else {
     assistantResponse = data.response || data.Error;
     const threadElement = document.getElementById("threadId");
     if (threadElement.value == "" || threadElement.value == null )
-      threadElement.value = data.response["thread_id"] || "";
+      threadElement.value = data.thread_id || "";
   }
   // Display the assistant's response
   const assistantMessageElement = document.createElement("div");

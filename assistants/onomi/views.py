@@ -34,6 +34,7 @@ def onomi(request):
         question = req.get("question")
         database = req.get("database")
         thread_id = req.get("thread_id")
+        is_admin = req.get("is_admin")
         # Validamos que haya un id empleado
         if not id_employee:
             return JsonResponse({"Error": "No Se Proporcionó Ningun ID de Empleado."}, status=400, safe=False)
@@ -62,7 +63,7 @@ def onomi(request):
         if type(thread_id) != str and thread_id != '':
             return JsonResponse({"Error": "EL ID de Thread debe ser enviado como cadena de texto."}, status=400, safe=False)
         
-        data = onomi_assistant(id_employee,compania,question,database,thread_id)
+        data = onomi_assistant(id_employee,compania,question,database,thread_id,is_admin)
         # data= 'hola'
         return JsonResponse(data, status=200, safe=False)
     except ValueError as e:

@@ -39,9 +39,9 @@
     }
   },
   {
-    "VERSION":2,
-    "name": "get_current_employee_information",
-    "description": "Get all the current information of the employee that is log, such as payroll information, details of the job position and different concepts of payment of the employee",
+    "VERSION": 2,
+    "name": "get_current_session_employee_info",
+    "description": "Retrieve all available information about the currently authenticated employee in the session, including payroll details, job position, and payment concepts. This function exclusively returns data for the logged-in employee.",
     "strict": false,
     "parameters": {
       "type": "object",
