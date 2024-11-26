@@ -4,9 +4,9 @@ import logging
 def auth_login():
     url="https://api.grupoono.lat/auth"
     payload = {
-            'customer_key': 'NISSANMEX',
-            'customer_user': 'APIGONS',
-            'customer_password': 'Yi#L1A$Av)gja&TM'
+            'customer_key': 'DEMOMEX',
+            'customer_user': 'USERAPI',
+            'customer_password': 'y4jAki5od4Sa$oR'
         }
     auth = requests.post(url,data=payload).json()
     if 'status' in auth.keys() and auth['status'] == 'success':
