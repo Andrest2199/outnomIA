@@ -173,3 +173,4 @@ utils/__pycache__/
 /static/
 .idea/
 test.py
+requirements.txt
