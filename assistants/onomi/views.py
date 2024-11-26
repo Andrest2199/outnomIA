@@ -11,17 +11,16 @@ import requests
 @csrf_exempt
 def index(request):
     # For Dev pourpose the API Key is on our enviorment but this API Key need to be send in the header in Prod so you can have access to the API Gateway of ONOMI
-    threads = ["thread_zaoTv5iw1BnM18ml5bW8rBbq",
-              "thread_VCzZV3wFX2T8OilEp9xiZkyt",
-              "thread_4qnz1aJ6MeMExxwUFr2JTsnS",
+        # For Dev pourpose the API Key is on our enviorment but this API Key need to be send in the header in Prod so you can have access to the API Gateway of ONOMI
+    threads = ["thread_bc5UEaRDWOXNdd25zVTMp2fu",
+              "thread_Go0VIMu5HP3hAJWYcT7zJNxy",
               "thread_qIV8i52aUoIivBmN8cWF4WFl",
-              "thread_p3fwAkACEy1uTUyNq6vNltbV",
               "thread_OfwxHKROBAn04VrznrmZhBwa",
-              "thread_xXbgptqOdbqtq7Lum3sobadi",
               "thread_dDtBL2TjsXlmqBFPGIOEOZRr",
               "thread_ZtSrmPjhDLXzz7W8ljvoF5gj"]
     context = {"api_key": settings.API_KEY,"threads": threads}
     return render(request,"index.html",context)
+
 
 @csrf_exempt
 def onomi(request):
@@ -35,6 +34,7 @@ def onomi(request):
         question = req.get("question")
         database = req.get("database")
         thread_id = req.get("thread_id")
+        is_admin = req.get("is_admin")
         # Validamos que haya un id empleado
         if not id_employee:
             return JsonResponse({"Error": "No Se Proporcionó Ningun ID de Empleado."}, status=400, safe=False)
@@ -63,7 +63,7 @@ def onomi(request):
         if type(thread_id) != str and thread_id != '':
             return JsonResponse({"Error": "EL ID de Thread debe ser enviado como cadena de texto."}, status=400, safe=False)
         
-        data = onomi_assistant(id_employee,compania,question,database,thread_id)
+        data = onomi_assistant(id_employee,compania,question,database,thread_id,is_admin)
         # data= 'hola'
         return JsonResponse(data, status=200, safe=False)
     except ValueError as e:
