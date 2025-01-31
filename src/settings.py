@@ -36,10 +36,10 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 if DEBUG:
-    ALLOWED_HOSTS = ["3.82.204.90","127.0.0.1"]
+    ALLOWED_HOSTS = ["18.234.240.74","127.0.0.1"]
     LOG_FILE= "onomi_logs_dev.log"
 else:
-    ALLOWED_HOSTS = ["3.82.204.90","127.0.0.1","go3.grupoono.lat","api.grupoono.lat","go3.localhost","201.163.197.69"]
+    ALLOWED_HOSTS = ["18.234.240.74","127.0.0.1","go3.grupoono.lat","api.grupoono.lat","go3.localhost","201.163.197.69"]
     LOG_FILE= env("LOG_FILE")
 SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = True
@@ -93,15 +93,14 @@ WSGI_APPLICATION = 'src.wsgi.application'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
-    "http://127.0.0.1:3000",
     "http://0.0.0.0:3000",
-    "http://3.82.204.90"
+    "http://18.234.240.74"
 ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     "http://127.0.0.1:8000",
-    "http://3.82.204.90"
+    "http://18.234.240.74"
 ]
 
 # Database
