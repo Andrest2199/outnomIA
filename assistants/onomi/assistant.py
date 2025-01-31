@@ -61,9 +61,8 @@ def onomi_assistant(id_employee,company,question,database,thread_id,is_admin):
     while run.status not in ["completed", "failed", "cancelled", "incomplete", "expired"]:
         iteration_count += 1
         if iteration_count > MAX_ITERATIONS:
+            run = client.beta.threads.runs.cancel(thread_id=thread.id,run_id=run.id)
             logging.error(f"%s|%s| Maximum iterations reached in RUN cycle. Exiting.", id_employee, company)
-            response.update({"Error": "Maximum iterations reached in RUN cycle. Possible infinite loop."})
-            return format_response(question, id_employee, company, database, response, thread.id, 0)
         # Verifiy running status 
         if run.status in ["queued", "in_progress", "cancelling"]:
             time.sleep(1)
