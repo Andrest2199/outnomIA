@@ -7,7 +7,7 @@ def handle_required_action(client, run, thread_id, company, employee_number, is_
     tools_to_call = run.required_action.submit_tool_outputs.tool_calls
     logging.info(f"%s|%s| TOOLS TO CALL: {tools_to_call}",employee_number,company)
     # Available function, this function are define in the assistant
-    available_function = ["get_current_session_employee_info","get_all_employees_information","get_payroll_receipt"]
+    available_function = ["obtener_info_empleado_actual","obtener_todos_los_empleados","obtener_recibo_pago"]
     #Declare outputs response
     tool_outputs=[]
     for tool in tools_to_call:
@@ -24,7 +24,7 @@ def handle_required_action(client, run, thread_id, company, employee_number, is_
 
         logging.info(f"%s|%s| FUNCTION NAME: {function_name}",employee_number,company)
         logging.info(f"%s|%s| IS_ADMIN: {is_admin}",employee_number,company)
-        if function_name == "get_all_employees_information" and is_admin:
+        if function_name == "obtener_todos_los_empleados" and is_admin:
             # Execute API call
             response_data = get_plantilla_personal(company)
             if not response_data:
@@ -36,7 +36,7 @@ def handle_required_action(client, run, thread_id, company, employee_number, is_
                 "tool_call_id": tool.id,
                 "output": str(response_data)
             })
-        elif function_name =="get_all_employees_information" and not is_admin:
+        elif function_name =="obtener_todos_los_empleados" and not is_admin:
             logging.info(f"%s|%s| API RESPONSE: The user doesn't have access to this information.",employee_number,company)
             # Response returned to the assistant
             tool_outputs.append({
@@ -44,11 +44,11 @@ def handle_required_action(client, run, thread_id, company, employee_number, is_
                 "output": "The user doesn't have access to this information."
             })
             
-        if function_name == "get_current_session_employee_info":
+        if function_name == "obtener_info_empleado_actual":
             # Execute API call
             response_data = get_info_empleado(company,employee_number)
             if not response_data:
-                response_data = "No data returned from the API."
+                response_data = "No data for this employee or no data returned from the API."
                 
             logging.info(f"%s|%s| API RESPONSE: {response_data}",employee_number,company)
             # Response returned to the assistant
@@ -57,7 +57,7 @@ def handle_required_action(client, run, thread_id, company, employee_number, is_
                 "output": str(response_data)
             })
             
-        if function_name == "get_payroll_receipt":
+        if function_name == "obtener_recibo_pago":
             params_str = tool.function.arguments
             params = json.loads(params_str) if isinstance(params_str, str) else params_str
 
@@ -77,7 +77,7 @@ def handle_required_action(client, run, thread_id, company, employee_number, is_
                     # Execute API call
                     response_data = get_payroll_receipt(company,employee_number,period)
                     if not response_data:
-                        response_data = "No data returned from the API."
+                        response_data = "No data for this period or no data returned from the API."
                         
                     logging.info(f"%s|%s| API RESPONSE: {response_data}",employee_number,company)
             # Response returned to the assistant
