@@ -1,11 +1,9 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
+from django.http import  JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.conf import settings
 from assistants.onomi.assistant import onomi_assistant, transcribe
 from assistants.onomi.utils.messages import retrieve_messages_thread
 import json
-import requests
+import re
 
 # Create your views here.
 @csrf_exempt
@@ -108,13 +106,16 @@ def audio_transcribe(request):
             return JsonResponse(
                 {"Error": "No se recibió archivo de audio."}, status=400
             )
+        
+        # Extraer solo la subextensión (webm, wav, mpeg)
+        match = re.match(r"^(audio|video)/([a-zA-Z0-9.+-]+)$", audio_file.content_type)
 
-        if not audio_file.content_type in ["audio/webm", "audio/wav", "audio/mpeg"]:
+        if not match or match.group(2) not in ["webm", "wav", "mpeg", "ogg", "mp3"]:
             return JsonResponse({"Error": "Tipo de archivo no permitido."}, status=400)
 
-        if audio_file.size > 20 * 1024 * 1024:  # 20MB
+        if audio_file.size > 2 * 1024 * 1024:  # 2MB
             return JsonResponse(
-                {"Error": "Archivo demasiado grande. Máximo 20MB."}, status=400
+                {"Error": "Archivo demasiado grande. Máximo 2MB."}, status=400
             )
 
         if not id_empleado or not compania:
