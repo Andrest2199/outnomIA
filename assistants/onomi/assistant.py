@@ -1,5 +1,6 @@
 # %%
 import os
+import io
 import sys
 import time
 import logging
@@ -21,11 +22,11 @@ org_id = settings.OPENAI_ORG_ID
 assistant_id = settings.OPENAI_ASSISTANT
 log_file = settings.LOG_FILE
 
+# Set log
+logging.basicConfig(filename=log_file,format="%(levelname)s|%(asctime)s|%(message)s",level=logging.INFO)
+
 #Main function
 def onomi_assistant(id_employee,company,question,database,thread_id,is_admin):
-    # return format_response('hola','111','1','2','test','thread_ZtSrmPjhDLXzz7W8ljvoF5gj','0')
-    # Set log
-    logging.basicConfig(filename=log_file,format="%(levelname)s|%(asctime)s|%(message)s",level=logging.INFO)
     # Declare variables
     response = {}
     tokens_use = 0
@@ -104,6 +105,37 @@ def onomi_assistant(id_employee,company,question,database,thread_id,is_admin):
     # Return JSON response
     return format_response(question, id_employee, company, database, response, thread.id, tokens_use)
 
+def transcribe(id_employee,company,audio):
+    """
+    Transcribe el audio a text usando whisper 1 de Open AI (auto deteccion de idioma).
+    
+    Parameters:
+        audio (file-like): A Django `request.FILES['audio']` o un archivo abierto con `open(path, 'rb')`
+    
+    Returns:
+        str: Texto transcrito o False
+    """
+    # Create instance of openAI client
+    client = OpenAI(organization=org_id,api_key=api_key)
+    try:
+        logging.info(f"%s|%s| BEGIN TRANSCRIPTION: {audio}",id_employee,company)
+        # Convertimos el InMemoryUploadedFile a BytesIO
+        audio_bytes = io.BytesIO(audio.read())
+        audio_bytes.name = audio.name  # Agregar nombre al archivo
+        audio_bytes.seek(0)  # Asegurar que empieza desde el inicio
+
+        # Llamada a la API Whisper
+        transcript = client.audio.transcriptions.create(
+            model="whisper-1",
+            file=audio_bytes,
+            response_format="text"
+        )
+        logging.info(f"%s|%s| TRANSCRIPTION: {transcript}",id_employee,company)
+        return transcript
+    except Exception as e:
+        logging.error(f"%s|%s| ERROR TRANSCRIPTION: {e}",id_employee,company)
+        return False
+    
 def format_response(question, id_employee, company, database, response, thread_id, tokens):
     json_response = QuestionToAnswer(
         question=question,

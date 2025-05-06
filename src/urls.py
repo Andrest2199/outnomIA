@@ -21,7 +21,7 @@ from assistants.onomi import views as onomi_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     #ONOMI Urls
-    path('', onomi_views.index, name='index'),
     path('onomi', onomi_views.onomi, name='onomi'),
     path('retrieve_messages', onomi_views.retrieve_messages, name='retrieve_messages'),
+    path('audio_transcribe', onomi_views.audio_transcribe, name='audio_transcribe'),
 ]
