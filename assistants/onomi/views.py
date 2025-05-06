@@ -88,7 +88,7 @@ def onomi(request):
 
         return JsonResponse(data, status=200, safe=False)
     except ValueError as e:
-        return JsonResponse(str(e), status=422)
+        return JsonResponse(str(e), status=422, safe=False)
     except Exception as e:
         return JsonResponse(str(e), status=500, safe=False)
 
@@ -126,10 +126,10 @@ def audio_transcribe(request):
                 status=500,
             )
 
-        return JsonResponse(transcription, status=200)
+        return JsonResponse(transcription, status=200, safe=False)
 
     except Exception as e:
-        return JsonResponse(str(e), status=500)
+        return JsonResponse(str(e), status=500, safe=False)
 
 
 @csrf_exempt
@@ -156,10 +156,10 @@ def retrieve_messages(request):
 
         data = retrieve_messages_thread(thread_id)
         if "error" in data.keys():
-            return JsonResponse(data.get("error"), status=404)
+            return JsonResponse(data.get("error"), status=404, safe=False)
 
         return JsonResponse(data, status=200, safe=False)
     except ValueError as e:
-        return JsonResponse(str(e), status=422)
+        return JsonResponse(str(e), status=422, safe=False)
     except Exception as e:
         return JsonResponse(str(e), status=500, safe=False)
