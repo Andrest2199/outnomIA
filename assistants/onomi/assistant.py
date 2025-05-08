@@ -9,6 +9,7 @@ from django.conf import settings
 from assistants.onomi.models import QuestionToAnswer
 from assistants.onomi.utils.functions import handle_required_action
 from assistants.onomi.utils.messages import retrieve_annotation
+from utils.utils import extract_openai_error_details
 
 #TODO:cambiar los errores de salida en la respuesta por una respuesta "Disculpe la molestia, por el momento la respuesta no esta disponible, favor de acercarse a su departamento de recursos humanos o intentar de nuevo mas tarde."
 
@@ -115,6 +116,7 @@ def transcribe(id_employee,company,audio):
     Returns:
         str: Texto transcrito o False
     """
+    # TODO: Implementar validacion de audio vacio y transcripcion nula
     # Create instance of openAI client
     client = OpenAI(organization=org_id,api_key=api_key)
     try:
@@ -133,8 +135,9 @@ def transcribe(id_employee,company,audio):
         logging.info(f"%s|%s| TRANSCRIPTION: {transcript}",id_employee,company)
         return transcript
     except Exception as e:
-        logging.error(f"%s|%s| ERROR TRANSCRIPTION: {e}",id_employee,company)
-        return False
+        logging.error(f"%s|%s| ERROR TRANSCRIPTION: {str(e)}",id_employee,company)
+        details = extract_openai_error_details(str(e))
+        return {"error": details["message"], "code": details["code"]}
     
 def format_response(question, id_employee, company, database, response, thread_id, tokens):
     json_response = QuestionToAnswer(

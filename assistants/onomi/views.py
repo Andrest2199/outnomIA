@@ -1,7 +1,7 @@
-from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from assistants.onomi.assistant import onomi_assistant, transcribe
 from assistants.onomi.utils.messages import retrieve_messages_thread
+from utils.utils import json_error, json_success
 import json
 import re
 
@@ -66,9 +66,9 @@ def onomi(request):
 
         return json_success(data)
     except ValueError as e:
-        return json_error(e, 422)
+        return json_error(str(e), 422)
     except Exception as e:
-        return json_error(e, 500)
+        return json_error(str(e), 500)
 
 
 @csrf_exempt
@@ -98,16 +98,13 @@ def audio_transcribe(request):
 
         transcription = transcribe(id_empleado, compania, audio_file)
 
-        if not (transcription):
-            return json_error(
-                "Ocurrio un error en la transcripción del audio, intente mas tarde.",
-                422,
-            )
+        if "error" in transcription.keys():
+            return json_error(transcription.get("error"), transcription.get("code"))
 
         return json_success(transcription)
 
     except Exception as e:
-        return json_error(e, 500)
+        return json_error(str(e), 500)
 
 
 @csrf_exempt
@@ -127,21 +124,10 @@ def retrieve_messages(request):
         data = retrieve_messages_thread(thread_id)
 
         if "error" in data.keys():
-            return json_error(data.get("error"))
+            return json_error(data.get("error"), data.get("code"))
 
         return json_success(data)
     except ValueError as e:
-        return json_error(e, 422)
+        return json_error(str(e), 422)
     except Exception as e:
-        return json_error(e, 500)
-
-
-def json_success(data, status=200):
-    return JsonResponse({"status": "success", "data": data}, status=status)
-
-
-def json_error(message, status=400):
-    return JsonResponse(
-        {"status": "error", "error": {"message": message, "code": status}},
-        status=status,
-    )
+        return json_error(str(e), 500)
