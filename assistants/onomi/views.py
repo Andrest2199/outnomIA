@@ -1,7 +1,7 @@
 from django.views.decorators.csrf import csrf_exempt
 from assistants.onomi.assistant import onomi_assistant, transcribe
 from assistants.onomi.utils.messages import retrieve_messages_thread
-from utils.utils import json_error, json_success
+from assistants.onomi.utils.utils import json_error, json_success
 import json
 import re
 

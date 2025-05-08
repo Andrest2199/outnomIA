@@ -9,7 +9,7 @@ from django.conf import settings
 from assistants.onomi.models import QuestionToAnswer
 from assistants.onomi.utils.functions import handle_required_action
 from assistants.onomi.utils.messages import retrieve_annotation
-from utils.utils import extract_openai_error_details
+from assistants.onomi.utils.utils import extract_openai_error_details
 
 #TODO:cambiar los errores de salida en la respuesta por una respuesta "Disculpe la molestia, por el momento la respuesta no esta disponible, favor de acercarse a su departamento de recursos humanos o intentar de nuevo mas tarde."
 

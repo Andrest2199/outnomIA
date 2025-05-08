@@ -1,6 +1,6 @@
 from openai import OpenAI, BadRequestError
 from django.conf import settings
-from utils.utils import extract_openai_error_details
+from assistants.onomi.utils.utils import extract_openai_error_details
 import json
 import re
 
