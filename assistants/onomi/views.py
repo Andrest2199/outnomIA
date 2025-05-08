@@ -10,7 +10,7 @@ import re
 @csrf_exempt
 def onomi(request):
     if request.method != "POST":
-        return JsonResponse("Method not allowed", status=405, safe=False)
+        return json_error("Method not allowed", 405)
 
     try:
         # Cargamos JSON
@@ -24,79 +24,57 @@ def onomi(request):
         is_admin = req.get("is_admin")
         # Validamos que haya un id empleado
         if not id_employee:
-            return JsonResponse(
-                "No Se Proporcionó Ningun ID de Empleado.",
-                status=400,
-                safe=False,
-            )
+            return json_error("No Se Proporcionó Ningun ID de Empleado.")
+
         # Validamos que haya una pregunta
         if not question:
-            return JsonResponse(
-                "No Se Proporcionó Ninguna Pregunta.", status=400, safe=False
-            )
+            return json_error("No Se Proporcionó Ninguna Pregunta.")
+
         # Validamos que haya una compania
         if not compania:
-            return JsonResponse(
-                "No Se Proporcionó Ninguna Compania.", status=400, safe=False
-            )
+            return json_error("No Se Proporcionó Ninguna Compania.")
+
         # Validamos que haya una database
         if not database:
-            return JsonResponse(
-                "No Se Proporcionó Ninguna Base de Datos.",
-                status=400,
-                safe=False,
-            )
+            return json_error("No Se Proporcionó Ninguna Base de Datos.")
+
         # Validamos el tipo de id empleado
         if type(id_employee) != str:
-            return JsonResponse(
-                "EL ID de Empleado debe ser enviado como cadena de texto.",
-                status=400,
-                safe=False,
+            return json_error(
+                "EL ID de Empleado debe ser enviado como cadena de texto."
             )
+
         # Validamos el tipo de question
         if type(question) != str:
-            return JsonResponse(
-                "La pregunta debe ser enviada como cadena de texto.",
-                status=400,
-                safe=False,
-            )
+            return json_error("La pregunta debe ser enviada como cadena de texto.")
+
         # Validamos el tipo de id empleado
         if type(compania) != str:
-            return JsonResponse(
-                "La compania debe ser enviada como cadena de texto.",
-                status=400,
-                safe=False,
-            )
+            return json_error("La compania debe ser enviada como cadena de texto.")
+
         # Validamos el tipo de id empleado
         if type(database) != str:
-            return JsonResponse(
-                "La base de datos debe ser enviada como cadena de texto.",
-                status=400,
-                safe=False,
-            )
+            return json_error("La base de datos debe ser enviada como cadena de texto.")
+
         # Validamos el tipo de thread_id
         if type(thread_id) != str and thread_id != "":
-            return JsonResponse(
-                "EL ID de Thread debe ser enviado como cadena de texto.",
-                status=400,
-                safe=False,
-            )
+            return json_error("EL ID de Thread debe ser enviado como cadena de texto.")
 
         data = onomi_assistant(
             id_employee, compania, question, database, thread_id, is_admin
         )
 
-        return JsonResponse(data, status=200, safe=False)
+        return json_success(data)
     except ValueError as e:
-        return JsonResponse(str(e), status=422, safe=False)
+        return json_error(e, 422)
     except Exception as e:
-        return JsonResponse(str(e), status=500, safe=False)
+        return json_error(e, 500)
 
 
 @csrf_exempt
 def audio_transcribe(request):
     if request.method != "POST":
-        return JsonResponse("Method not allowed", status=405, safe=False)
+        return json_error("Method not allowed", 405)
 
     try:
         audio_file = request.FILES.get("audio")
@@ -104,63 +82,66 @@ def audio_transcribe(request):
         compania = request.POST.get("compania")
 
         if not audio_file:
-            return JsonResponse("No se recibió archivo de audio.", status=400, safe=False)
+            return json_error("No se recibió archivo de audio.")
 
         # Extraer solo la subextensión (webm, wav, mpeg)
         match = re.match(r"^(audio|video)/([a-zA-Z0-9.+-]+)$", audio_file.content_type)
 
         if not match or match.group(2) not in ["webm", "wav", "mpeg", "ogg", "mp3"]:
-            return JsonResponse("Tipo de archivo no permitido.", status=400, safe=False)
+            return json_error("Tipo de archivo no permitido.")
 
         if audio_file.size > 2 * 1024 * 1024:  # 2MB
-            return JsonResponse("Archivo demasiado grande. Máximo 2MB.", status=400, safe=False)
+            return json_error("Archivo demasiado grande. Máximo 2MB.")
 
         if not id_empleado or not compania:
-            return JsonResponse("Faltan parámetros obligatorios.", status=400, safe=False)
+            return json_error("Faltan parámetros obligatorios.")
 
         transcription = transcribe(id_empleado, compania, audio_file)
 
         if not (transcription):
-            return JsonResponse(
+            return json_error(
                 "Ocurrio un error en la transcripción del audio, intente mas tarde.",
-                status=500,
-                safe=False
+                422,
             )
 
-        return JsonResponse(transcription, status=200, safe=False)
+        return json_success(transcription)
 
     except Exception as e:
-        return JsonResponse(str(e), status=500, safe=False)
+        return json_error(e, 500)
 
 
 @csrf_exempt
 def retrieve_messages(request):
     if request.method != "GET":
-        return JsonResponse("Method not allowed", status=405, safe=False)
+        return json_error("Method not allowed", 405)
 
     try:
         thread_id = request.GET.get("thread_id")
         # Validamos que haya un id empleado
         if not thread_id:
-            return JsonResponse(
-                "No Se Proporcionó Ningun ID de Hilo de Conversación.",
-                status=400,
-                safe=False,
-            )
+            return json_error("No Se Proporcionó Ningun Thread ID.")
         # Validamos el tipo de thread_id
         if not isinstance(thread_id, str):
-            return JsonResponse(
-                "EL ID de Thread debe ser enviado como cadena de texto.",
-                status=400,
-                safe=False,
-            )
+            return json_error("EL ID de Thread debe ser enviado como cadena de texto.")
 
         data = retrieve_messages_thread(thread_id)
-        if "error" in data.keys():
-            return JsonResponse(data.get("error"), status=404, safe=False)
 
-        return JsonResponse(data, status=200, safe=False)
+        if "error" in data.keys():
+            return json_error(data.get("error"))
+
+        return json_success(data)
     except ValueError as e:
-        return JsonResponse(str(e), status=422, safe=False)
+        return json_error(e, 422)
     except Exception as e:
-        return JsonResponse(str(e), status=500, safe=False)
+        return json_error(e, 500)
+
+
+def json_success(data, status=200):
+    return JsonResponse({"status": "success", "data": data}, status=status)
+
+
+def json_error(message, status=400):
+    return JsonResponse(
+        {"status": "error", "error": {"message": message, "code": status}},
+        status=status,
+    )
