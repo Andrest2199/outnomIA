@@ -96,7 +96,7 @@ def onomi(request):
 @csrf_exempt
 def audio_transcribe(request):
     if request.method != "POST":
-        return JsonResponse("Method not allowed", status=405)
+        return JsonResponse("Method not allowed", status=405, safe=False)
 
     try:
         audio_file = request.FILES.get("audio")
@@ -104,19 +104,19 @@ def audio_transcribe(request):
         compania = request.POST.get("compania")
 
         if not audio_file:
-            return JsonResponse("No se recibió archivo de audio.", status=400)
+            return JsonResponse("No se recibió archivo de audio.", status=400, safe=False)
 
         # Extraer solo la subextensión (webm, wav, mpeg)
         match = re.match(r"^(audio|video)/([a-zA-Z0-9.+-]+)$", audio_file.content_type)
 
         if not match or match.group(2) not in ["webm", "wav", "mpeg", "ogg", "mp3"]:
-            return JsonResponse("Tipo de archivo no permitido.", status=400)
+            return JsonResponse("Tipo de archivo no permitido.", status=400, safe=False)
 
         if audio_file.size > 2 * 1024 * 1024:  # 2MB
-            return JsonResponse("Archivo demasiado grande. Máximo 2MB.", status=400)
+            return JsonResponse("Archivo demasiado grande. Máximo 2MB.", status=400, safe=False)
 
         if not id_empleado or not compania:
-            return JsonResponse("Faltan parámetros obligatorios.", status=400)
+            return JsonResponse("Faltan parámetros obligatorios.", status=400, safe=False)
 
         transcription = transcribe(id_empleado, compania, audio_file)
 
@@ -124,6 +124,7 @@ def audio_transcribe(request):
             return JsonResponse(
                 "Ocurrio un error en la transcripción del audio, intente mas tarde.",
                 status=500,
+                safe=False
             )
 
         return JsonResponse(transcription, status=200, safe=False)
