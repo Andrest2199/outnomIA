@@ -98,7 +98,7 @@ def audio_transcribe(request):
 
         transcription = transcribe(id_empleado, compania, audio_file)
 
-        if "error" in transcription.keys():
+        if isinstance(transcription,dict) and "error" in transcription.keys():
             return json_error(transcription.get("error"), transcription.get("code"))
 
         return json_success(transcription)
@@ -123,7 +123,7 @@ def retrieve_messages(request):
 
         data = retrieve_messages_thread(thread_id)
 
-        if "error" in data.keys():
+        if  isinstance(data,dict) and "error" in data.keys():
             return json_error(data.get("error"), data.get("code"))
 
         return json_success(data)
