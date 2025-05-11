@@ -106,7 +106,7 @@ def handle_required_action(client, run, thread_id, company, employee_number, is_
             except Exception as cancel_error:
                 logging.error(f"%s|%s| FAILED TO CANCEL RUN: {cancel_error}", employee_number, company)
             # Return an error message to the main loop
-            return {"status": "error", "message": "Sorry for the inconvenience. At the moment, the answer is not available. If you need immediate assistance, please contact your Human Resources department directly."}
+            return {"status": "error", "message": "Disculpe la molestia, por el momento la respuesta no esta disponible, favor de acercarse a su departamento de recursos humanos o intentar de nuevo mas tarde."}
     else:
         logging.error(f"%s|%s| NO TOOL OUTPUTS TO SUBMIT.", employee_number, company)
         # Cancel the run explicitly
@@ -117,8 +117,9 @@ def handle_required_action(client, run, thread_id, company, employee_number, is_
         except Exception as cancel_error:
             logging.error(f"%s|%s| FAILED TO CANCEL RUN: {cancel_error}", employee_number, company)
             # Return an error message to the main loop
-            return {"status": "error", "message": "Sorry for the inconvenience. At the moment, the answer is not available. If you need immediate assistance, please contact your Human Resources department directly."}
+            return {"status": "error", "message": "Disculpe la molestia, por el momento la respuesta no esta disponible, favor de acercarse a su departamento de recursos humanos o intentar de nuevo mas tarde."}
 
+# FUNCIONES - LLAMADAS A APIs 
 def get_plantilla_personal(company):
     payload = {
         'company': int(company),

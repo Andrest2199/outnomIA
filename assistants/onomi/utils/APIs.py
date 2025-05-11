@@ -12,7 +12,6 @@ def auth_login():
     if 'status' in auth.keys() and auth['status'] == 'success':
         return {'success':auth['data']}
     else:
-        # print(f"ERROR RESPONSE API: {auth['error']}")
         logging.error(f"ERROR RESPONSE API: {auth['error']}")
         return {'error':auth['error']}
 
@@ -22,6 +21,16 @@ def call_api_with_auth(url, payload):
         return {"error": auth['error']}
     headers = {
         'Authorization': f'Bearer {auth["success"]}',
+        'Content-Type': 'application/x-www-form-urlencoded'
+    }
+    response = requests.post(url, data=payload, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    return {"error": response.text}
+
+def call_api(url, payload):
+    headers = {
+        # 'Authorization': f'Bearer {auth["success"]}',
         'Content-Type': 'application/x-www-form-urlencoded'
     }
     response = requests.post(url, data=payload, headers=headers)

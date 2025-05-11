@@ -22,6 +22,7 @@ def onomi(request):
         question = req.get("question")
         thread_id = req.get("thread_id")
         is_admin = req.get("is_admin")
+        
         # Validamos que haya un id empleado
         if not id_employee:
             return json_error("No Se Proporcionó Ningun ID de Empleado.")
@@ -60,8 +61,20 @@ def onomi(request):
         if type(thread_id) != str and thread_id != "":
             return json_error("EL ID de Thread debe ser enviado como cadena de texto.")
 
+        # Extramos data de personalizacion para IA.
+        match = re.search(r"\[DATAIAP:([^\]]+)\]", question)
+        dataIAP = (
+            match.group(1).split("|")
+            if match
+            else ["ONOMI", "español", "nova", "agregar"]
+        )
+
+        # Limpiar la parte [DATAIAP:...] del texto
+        question = re.sub(r"\[DATAIAP:[^\]]+\]", "", question).strip()
+        data = [id_employee, compania, question, database, thread_id, dataIAP, is_admin]
+        
         data = onomi_assistant(
-            id_employee, compania, question, database, thread_id, is_admin
+            id_employee, compania, question, database, thread_id, dataIAP, is_admin
         )
 
         return json_success(data)
@@ -98,7 +111,7 @@ def audio_transcribe(request):
 
         transcription = transcribe(id_empleado, compania, audio_file)
 
-        if isinstance(transcription,dict) and "error" in transcription.keys():
+        if isinstance(transcription, dict) and "error" in transcription.keys():
             return json_error(transcription.get("error"), transcription.get("code"))
 
         return json_success(transcription)
@@ -123,7 +136,7 @@ def retrieve_messages(request):
 
         data = retrieve_messages_thread(thread_id)
 
-        if  isinstance(data,dict) and "error" in data.keys():
+        if isinstance(data, dict) and "error" in data.keys():
             return json_error(data.get("error"), data.get("code"))
 
         return json_success(data)
