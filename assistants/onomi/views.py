@@ -71,7 +71,6 @@ def onomi(request):
 
         # Limpiar la parte [DATAIAP:...] del texto
         question = re.sub(r"\[DATAIAP:[^\]]+\]", "", question).strip()
-        data = [id_employee, compania, question, database, thread_id, dataIAP, is_admin]
         
         data = onomi_assistant(
             id_employee, compania, question, database, thread_id, dataIAP, is_admin
