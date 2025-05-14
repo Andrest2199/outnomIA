@@ -142,10 +142,19 @@ def onomi_assistant(id_employee, company, question, database, thread_id, dataIAP
         logging.info(f"%s|%s| RUN STATUS: {run.status}", id_employee, company)
         messages = client.beta.threads.messages.list(thread_id=thread.id)
         logging.info(f"%s|%s| MESSAGES: {messages}", id_employee, company)
-        last_message = messages.data[0]
-        response[last_message.role] = retrieve_annotation(
-            client, thread.id, last_message.id
+
+        # Filtrar solo mensajes del asistente generados por este run
+        assistant_messages = [
+            m for m in messages.data if m.role == "assistant" and m.run_id == run.id
+        ]
+        assistant_messages.sort(key=lambda m: m.created_at)
+
+        # Unir respuestas completas con anotaciones
+        full_response = "\n\n".join(
+            retrieve_annotation(client, thread.id, msg.id) for msg in assistant_messages
         )
+
+        response["assistant"] = full_response
         tokens_use = run.usage.total_tokens or 0
     elif run.status in ["failed", "cancelled", "incomplete", "expired"]:
         logging.info(
