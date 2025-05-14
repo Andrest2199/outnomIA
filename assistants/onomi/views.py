@@ -112,6 +112,9 @@ def audio_transcribe(request):
 
         if isinstance(transcription, dict) and "error" in transcription.keys():
             return json_error(transcription.get("error"), transcription.get("code"))
+        
+        if transcription.strip() == "":
+            return json_error("El audio no contiene voz reconocible.", status=400)
 
         return json_success(transcription)
 
