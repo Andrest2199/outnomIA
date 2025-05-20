@@ -4,6 +4,7 @@ import io
 import sys
 import time
 import logging
+from datetime import datetime
 from openai import OpenAI
 from django.conf import settings
 from assistants.onomi.models import QuestionToAnswer
@@ -34,7 +35,9 @@ logging.basicConfig(
 
 
 # Main function
-def onomi_assistant(id_employee, company, question, database, thread_id, dataIAP, is_admin):
+def onomi_assistant(
+    id_employee, company, question, database, thread_id, dataIAP, is_admin
+):
     # Declare variables
     response = {}
     tokens_use = 0
@@ -62,15 +65,15 @@ def onomi_assistant(id_employee, company, question, database, thread_id, dataIAP
     )
     logging.info(f"%s|%s| MESSAGE INFO: {message}", id_employee, company)
     # Definir las instrucciones adicionales para esta ejecución
-    if dataIAP[3] == 'agregar':
-        additional_instructions  = (
-            f"Para este chat, el usuario te llamará '{dataIAP[0]}' y espera respuestas en '{dataIAP[1]}'. "
+    if dataIAP[3] == "agregar":
+        additional_instructions = (
+            f"Para este chat, el usuario te llamará '{dataIAP[0]}' y espera respuestas en '{dataIAP[1]}'.  La fecha actual es'{datetime.now()}'. "
             "Asegúrate de mantener este comportamiento durante toda la conversación."
         )
     else:
-        additional_instructions  = (
+        additional_instructions = (
             f"Se ha actualizado tu personalización para este chat. Ahora tu nombre será '{dataIAP[0]}' "
-            f"y responderás en '{dataIAP[1]}'. Asegúrate de usar este nuevo comportamiento desde ahora."
+            f"y responderás en '{dataIAP[1]}'. La fecha actual es'{datetime.now()}'. Asegúrate de usar este nuevo comportamiento desde ahora."
         )
     # Run the thread
     run = client.beta.threads.runs.create(
