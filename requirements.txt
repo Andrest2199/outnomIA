@@ -53,6 +53,6 @@ tornado
 tqdm==4.67.0
 traitlets
 typing_extensions
-urllib3==2.2.3
+urllib3==2.6.3
 wcwidth
 zipp
