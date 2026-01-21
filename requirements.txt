@@ -9,14 +9,14 @@ comm
 debugpy
 decorator
 distro==1.9.0
-Django==5.1.3
+Django==5.2.10
 django-cors-headers==4.7.0
 django-environ==0.11.2
 djangorestframework==3.15.2
 exceptiongroup
 executing
-h11==0.14.0
-httpcore==1.0.6
+h11==0.16.0
+httpcore==1.0.9
 httpx==0.27.2
 idna==3.10
 importlib_metadata
